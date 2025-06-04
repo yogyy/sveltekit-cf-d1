@@ -1,4 +1,3 @@
-import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
@@ -7,6 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { createDB } from '$lib/server/db';
 import { z } from 'zod/v4';
 import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/auth';
+import { hashPassword, verifyPassword } from '$lib/crypto/password';
 
 export const load: PageServerLoad = async (event) => {
   if (event.locals.user) {
@@ -37,11 +37,9 @@ export const actions: Actions = {
       return fail(400, { error: 'Incorrect email or password' });
     }
 
-    const validPassword = await verify(existingUser.password!, data.password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1
+    const validPassword = await verifyPassword({
+      hash: existingUser.password!,
+      password: data.password
     });
 
     if (!validPassword) {
@@ -66,13 +64,7 @@ export const actions: Actions = {
     }
 
     const userId = generateUserId();
-    const passwordHash = await hash(data?.password, {
-      // recommended minimum parameters
-      memoryCost: 19456,
-      timeCost: 2,
-      outputLen: 32,
-      parallelism: 1
-    });
+    const passwordHash = await hashPassword(data.password);
 
     try {
       await createDB(event.platform!.env.DB).insert(table.user).values({
