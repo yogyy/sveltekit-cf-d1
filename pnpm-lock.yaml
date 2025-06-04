@@ -23,6 +23,9 @@ dependencies:
   drizzle-orm:
     specifier: ^0.40.0
     version: 0.40.1(@libsql/client@0.14.0)
+  zod:
+    specifier: ^3.25.49
+    version: 3.25.49
 
 devDependencies:
   '@eslint/compat':
@@ -4028,3 +4031,7 @@ packages:
   /zod@3.22.3:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: true
+
+  /zod@3.25.49:
+    resolution: {integrity: sha512-JMMPMy9ZBk3XFEdbM3iL1brx4NUSejd6xr3ELrrGEfGb355gjhiAWtG3K5o+AViV/3ZfkIrCzXsZn6SbLwTR8Q==}
+    dev: false

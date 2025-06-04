@@ -1,7 +1,7 @@
 <script lang="ts">
-	import '../app.css';
+  import '../app.css';
 
-	let { children } = $props();
+  let { children } = $props();
 </script>
 
-{@render children()}
+<main class="flex items-center justify-center h-svh">{@render children()}</main>
