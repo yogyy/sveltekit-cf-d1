@@ -1,26 +1,35 @@
 import type { Handle } from '@sveltejs/kit';
-import * as auth from '$lib/server/auth.js';
+import {
+  sessionCookieName,
+  validateSessionToken,
+  setSessionTokenCookie,
+  deleteSessionTokenCookie
+} from '$lib/server/auth.js';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
+  const sessionToken = event.cookies.get(sessionCookieName);
 
-	if (!sessionToken) {
-		event.locals.user = null;
-		event.locals.session = null;
-		return resolve(event);
-	}
+  if (event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')) {
+    return new Response(null, { status: 204 }); // Return empty response with 204 No Content
+  }
 
-	const { session, user } = await auth.validateSessionToken(sessionToken);
+  if (!sessionToken) {
+    event.locals.user = null;
+    event.locals.session = null;
+    return resolve(event);
+  }
 
-	if (session) {
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-	} else {
-		auth.deleteSessionTokenCookie(event);
-	}
+  const { session, user } = await validateSessionToken(event.platform!.env.DB, sessionToken);
 
-	event.locals.user = user;
-	event.locals.session = session;
-	return resolve(event);
+  if (session) {
+    setSessionTokenCookie(event, sessionToken, session.expiresAt);
+  } else {
+    deleteSessionTokenCookie(event);
+  }
+
+  event.locals.user = user;
+  event.locals.session = session;
+  return resolve(event);
 };
 
 export const handle: Handle = handleAuth;
