@@ -8,9 +8,7 @@
 <div class="">
   <h1>Hi, {data.user.name}!</h1>
   <p>Your user ID is {data.user.id}.</p>
-  <form method="post" action="?/logout" use:enhance>
-    <button>Sign out</button>
-  </form>
+  <form id="logout-form" method="post" action="?/logout" use:enhance></form>
 
   <pre>{JSON.stringify(data.user, null, 4)}</pre>
 </div>
